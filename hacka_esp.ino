@@ -15,6 +15,7 @@ const uint16_t port = 9999;
 
 
 unsigned long last_time;
+unsigned long last_time_2;
 int i = 0;
 int battery[] = {0, 0, 0};
 String InputString = "";
@@ -30,7 +31,6 @@ int MaxPower = 0;
 int MinPower = 0;
 String ID = "";
 
-//char jsonBattery[] = "{\"Type\":30,\"Data\":{\"current\":%d,\"voltage\":%d,\"energy\":%d}}\r\n";
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":{\"status\":\"run\",\"direction\":\"forward\",\"location\":{\"X\":1,\"Y\":3}}}\r\n";
 char jsonPanel[] = "{\"Type\":32,\"Data\":{\"location\":{\"X\":2,\"Y\":4},\"status\":\"fine\"}}\r\n";
@@ -148,10 +148,15 @@ void setup() {
   WiFi.begin(ssid, password);
   CheckWifi();
 #ifdef DEBUGER
-  Serial.printf("Wifi Connected!");
+  Serial.println("Wifi Connected!");
 #endif
   while (ID == "") {
-    Serial_Wifi();
+    if ( (unsigned long) (millis() - last_time_2) > 2000)
+    {
+      MasterSerial.print(String(Start) + String(IDError) + String("No ID Installed!") + String(End));
+      last_time_2 = millis();
+    }
+    Serial_ID();
   }
   client->onData(&handleData, client);
   client->onConnect(&onConnect, client);
@@ -173,5 +178,5 @@ void loop() {
     MasterSerial.print(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
     last_time = millis();
   }
-  
+
 }
