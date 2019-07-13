@@ -1,5 +1,5 @@
-const char Start = 0x61;
-const char End = 0x62;
+const char Start = 0x84;
+const char End = 0x95;
 /*--------------------UPDATE TO CLIENT------------------------------*/
 //char updateMode =1;
 //char changeSpeed =2;
@@ -15,10 +15,11 @@ const int updateBattery = 30;
 const int updateMachineStatus = 31;
 const int updatePanel = 32;
 
-/*--------------------UPDATE TO SLAVE------------------------------*/
+/*--------------------UPDATE TO WIFI SLAVE ------------------------------*/
 const char IDCmd = 0x01;
 const char DataCmd = 0x02;
 const char WifiCmd = 0x03;
+const char CameraCmd = 0x04;
 
 const char updateCurrentBattery = 0x11;
 const char updateVoltageBattery = 0x12;
@@ -30,7 +31,7 @@ const char updateLocationParameter = 0x18;
 
 const char updateLocationPanel = 0x20;
 const char updateStatusPanel = 0x21;
-/*--------------------UPDATE TO MASTER------------------------------*/
+/*--------------------UPDATE WIFI TO MASTER------------------------------*/
 const char AssignedIDCmd = 0x04;
 const char DataRecCmd = 0x05;
 const char Timeout = 0x06;
@@ -50,3 +51,6 @@ const char setMeasureMode = 0x53;
 const char setChargeMode = 0x54;
 const char setStop = 0x55;
 const char setContinue = 0x56;
+
+/*--------------------UPDATE TO CAMERA SLAVE ------------------------------*/
+const char CapImg = 0x70;

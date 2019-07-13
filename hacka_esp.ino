@@ -1,3 +1,4 @@
+//{"Type":6,"Data":"20"}
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ArduinoJson.h>
@@ -8,6 +9,8 @@ SoftwareSerial MasterSerial(D7, D8); // RX, TX
 #define DEBUGER
 
 /* Set Wifi Configuration */
+// server CMD: {"Type":6,"Data":"20"}
+
 const char *ssid = "FreeWifi";
 const char *password = "freecaicc";
 const char *ip = "192.168.43.167";
@@ -16,6 +19,7 @@ const uint16_t port = 9999;
 
 unsigned long last_time;
 unsigned long last_time_2;
+unsigned long last_time_3;
 int i = 0;
 int battery[] = {0, 0, 0};
 String InputString = "";
@@ -32,8 +36,9 @@ int MinPower = 0;
 String ID = "";
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
-char jsonParameter[] = "{\"Type\":31,\"Data\":{\"status\":\"run\",\"direction\":\"forward\",\"location\":{\"X\":1,\"Y\":3}}}\r\n";
-char jsonPanel[] = "{\"Type\":32,\"Data\":{\"location\":{\"X\":2,\"Y\":4},\"status\":\"fine\"}}\r\n";
+//char jsonParameter[] = "{\"Type\":31,\"Data\":\"{\'status\':\'%s\',\'direction\':\'%s\',\'location\':\'{\'X\':%d,\'Y\':%d}\'}\"}\r\n";
+char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','panel':%d, 'collumn':%d}\"}\r\n";
+char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'panel':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
 
 /* event callbacks */
 static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
@@ -41,18 +46,14 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
   Serial.printf("\n data received from %s \n", client->remoteIP().toString().c_str());
 #endif
 
-  //  Serial.write((uint8_t*)data, len);
-  const char *char_pointer = (char*)((uint8_t*)data);
-
-
+  char *char_pointer = (char*)((uint8_t*)data);
+  char_pointer[len - 1] = '\0';
 #ifdef DEBUGER
   Serial.println(char_pointer);
 #endif
-  // Allocate the JsonDocument
-  StaticJsonDocument<500> doc;
-
-  // Parse the JSON input
-  DeserializationError err = deserializeJson(doc, char_pointer);
+  StaticJsonDocument<500> doc; // Allocate the JsonDocument
+  DeserializationError err = deserializeJson(doc, char_pointer); // Parse the JSON input
+  // char_pointer ="";
 
   if (err) {
 #ifdef DEBUGER
@@ -66,38 +67,29 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
     const char* data = doc["Data"];
     switch (type) {
       case movingSpeed:
-
-        //Serial.println(String("0x01") + String(data));
+        Serial.print("Moving Speed: ");
+        Serial.println(String(data));
         //MasterSerial.println(String("0x01") + String(data));
         break;
-
       case chargingThreshold:
+        Serial.print("Charging Threshold: ");
+        Serial.println(String(data));
         break;
-
       case spinnerSpeed:
+        Serial.print("Spinner Speed: ");
+        Serial.println(String(data));
         break;
-
       case maxPower:
-
+        Serial.print("Max Power: ");
+        Serial.println(String(data));
         break;
-
       case minPower:
+        Serial.print("Min Power: ");
+        Serial.println(String(data));
         break;
-
       default:
         Serial.println("Unknown receive cmd");
     }
-    /*****************************************************/
-    //const char* ID = doc["ID"];
-    //Serial.println(ID);
-    int current = doc["battery"]["current"];
-    Serial.println(String("0x01") + String(current));
-    MasterSerial.println(String("0x01") + String(current));
-
-    int voltage = doc["battery"]["voltage"];
-    Serial.println(String("0x02") + String(voltage));
-    MasterSerial.println(String("0x02") + String(voltage));
-    //MasterSerial.println(char_pointer);
   }
 }
 
@@ -125,6 +117,12 @@ void SendClient(void* arg, int type) {
   switch (type) {
     case updateBattery:
       sprintf(message, jsonBattery, battery[0], battery[1], battery[2]);
+      break;
+    case updateMachineStatus:
+      sprintf(message, jsonParameter, "run", "forward", 1, 2);
+      break;
+    case updatePanel:
+      sprintf(message, jsonPanel, 3, 4, "fine");
       break;
     default:
       Serial.println("Unknown send client cmd");
@@ -161,21 +159,28 @@ void setup() {
   client->onData(&handleData, client);
   client->onConnect(&onConnect, client);
   client->connect(ip, port);
+  Serial.println("Socket Connected!!!");
 }
 
 void loop() {
   CheckWifi();
+    if ( (unsigned long) (millis() - last_time_3) > 2000)
+  {
+  CheckSocket();
+  last_time_3 = millis();
+  }
   Serial_Wifi();
   if ( (unsigned long) (millis() - last_time) > 2000)
   {
     battery[0] = random(9);
     battery[1] = random(10, 24);
     battery[2] = random(99);
-    //replyData(client, json);
-    SendClient(client, updateBattery);
+    // SendClient(client, updateBattery);
+    SendClient(client, updateMachineStatus);
+    // SendClient(client, updatePanel);
     //Test
     Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
-    MasterSerial.print(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
+    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
     last_time = millis();
   }
 
