@@ -2,12 +2,18 @@ const char Start = 0x84;
 const char End = 0x95;
 /*--------------------UPDATE TO CLIENT------------------------------*/
 //char updateMode =1;
-//char changeSpeed =2;
+const int typeFixedID = 2;
 const int movingSpeed = 3;
 const int chargingThreshold = 4;
 const int spinnerSpeed = 5;
-const int maxPower = 6;
-const int minPower = 7;
+const int Stop = 6;
+const int Continue = 7;
+const int Control = 8;
+const int Mode = 9;
+const int maxPower = 10;
+const int minPower = 11;
+const int Handshake = 20;
+
 
 /*--------------------UPDATE TO SERVER------------------------------*/
 const int updateID = 29;
@@ -19,7 +25,6 @@ const int updatePanel = 32;
 const char IDCmd = 0x01;
 const char DataCmd = 0x02;
 const char WifiCmd = 0x03;
-const char CameraCmd = 0x04;
 
 const char updateCurrentBattery = 0x11;
 const char updateVoltageBattery = 0x12;
@@ -53,4 +58,5 @@ const char setStop = 0x55;
 const char setContinue = 0x56;
 
 /*--------------------UPDATE TO CAMERA SLAVE ------------------------------*/
-const char CapImg = 0x70;
+const char CapImg = 0x08;
+const char StreamCmd = 0x09;

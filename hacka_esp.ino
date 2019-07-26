@@ -20,6 +20,8 @@ const uint16_t port = 9999;
 unsigned long last_time;
 unsigned long last_time_2;
 unsigned long last_time_3;
+unsigned long last_time_4;
+unsigned long last_time_5;
 int i = 0;
 int battery[] = {0, 0, 0};
 String InputString = "";
@@ -34,9 +36,10 @@ int SpinnerSpeed = 0;
 int MaxPower = 0;
 int MinPower = 0;
 String ID = "";
+bool ACK_ID = 0;
+bool config_network=0;
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
-//char jsonParameter[] = "{\"Type\":31,\"Data\":\"{\'status\':\'%s\',\'direction\':\'%s\',\'location\':\'{\'X\':%d,\'Y\':%d}\'}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','panel':%d, 'collumn':%d}\"}\r\n";
 char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'panel':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
 
@@ -84,8 +87,17 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
         Serial.println(String(data));
         break;
       case minPower:
+#ifdef DEBUGER
         Serial.print("Min Power: ");
         Serial.println(String(data));
+#endif
+        break;
+      case Handshake:
+#ifdef DEBUGER
+        ACK_ID = 1;
+        Serial.print("ACK: ");
+        Serial.println(String(data));
+#endif
         break;
       default:
         Serial.println("Unknown receive cmd");
@@ -148,40 +160,59 @@ void setup() {
 #ifdef DEBUGER
   Serial.println("Wifi Connected!");
 #endif
-  while (ID == "") {
-    if ( (unsigned long) (millis() - last_time_2) > 2000)
-    {
-      MasterSerial.print(String(Start) + String(IDError) + String("No ID Installed!") + String(End));
-      last_time_2 = millis();
+  while (!config_network) {
+    while (ID == "") {
+      if ( (unsigned long) (millis() - last_time_2) > 2000)
+      {
+        MasterSerial.print(String(Start) + String(IDError) + String("No ID Installed!") + String(End));
+        Serial.println(String(Start) + String(IDError) + String("No ID Installed!") + String(End));
+        last_time_2 = millis();
+      }
+      Serial_ID();
     }
-    Serial_ID();
+    client->onData(&handleData, client);
+    client->onConnect(&onConnect, client);
+    client->connect(ip, port);
+    last_time_5 = millis();
+    while (!ACK_ID) {
+      delay(10);
+      if ((millis() - last_time_5) > 4000) {
+        Serial.println("Timeout!!!");
+        break;
+      }
+    }
+    if (ACK_ID && (millis() - last_time_5) < 4000) config_network = 1;
+    else ID = "";
   }
-  client->onData(&handleData, client);
-  client->onConnect(&onConnect, client);
-  client->connect(ip, port);
   Serial.println("Socket Connected!!!");
+  last_time_3 = millis();
 }
 
 void loop() {
+
+
   CheckWifi();
-    if ( (unsigned long) (millis() - last_time_3) > 2000)
+  if ( (unsigned long) (millis() - last_time_3) > 2000)
   {
-  CheckSocket();
-  last_time_3 = millis();
+    CheckSocket();
+    last_time_3 = millis();
   }
   Serial_Wifi();
   if ( (unsigned long) (millis() - last_time) > 2000)
   {
-    battery[0] = random(9);
-    battery[1] = random(10, 24);
     battery[2] = random(99);
-    // SendClient(client, updateBattery);
+    SendClient(client, updateBattery);
     SendClient(client, updateMachineStatus);
     // SendClient(client, updatePanel);
     //Test
     Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
     UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
     last_time = millis();
+  }
+  if ( (unsigned long) (millis() - last_time_4) > 3000)
+  {
+    SendClient(client, updateMachineStatus);
+    last_time_4 = millis();
   }
 
 }

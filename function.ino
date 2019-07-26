@@ -35,8 +35,12 @@ void Serial_ID() {
       case IDCmd:
         ID = InputString;
         // RegisterClient(client, ID); /// dang ky ID moi
+        Serial.print("ID: ");
+        Serial.println(ID);
         break;
     }
+    InputString = "";
+    StringComplete = false;
   }
 }
 void Serial_Wifi() {
@@ -66,15 +70,17 @@ void Serial_Wifi() {
         // RegisterClient(client, ID); /// dang ky ID moi
         break;
       case updateCurrentBattery:
+        battery[0] = InputString.toInt();
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
-        Serial.println(SpinnerSpeed);
+        Serial.print("Set Current Battery: ");
+        Serial.println(battery[0]);
 #endif
         break;
       case updateVoltageBattery:
+        battery[1] = InputString.toInt();
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
-        Serial.println(ChargingThreshold);
+        Serial.print("Set Voltage Battery: ");
+        Serial.println(battery[1]);
 #endif
         break;
       case updateEnergyBattery:
