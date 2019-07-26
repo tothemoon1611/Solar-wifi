@@ -40,8 +40,8 @@ bool ACK_ID = 0;
 bool config_network=0;
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
-char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','panel':%d, 'collumn':%d}\"}\r\n";
-char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'panel':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
+char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
+char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
 
 /* event callbacks */
 static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
@@ -69,30 +69,25 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
     int type = doc["Type"];
     const char* data = doc["Data"];
     switch (type) {
-      case movingSpeed:
+      case typemovingSpeed:
         Serial.print("Moving Speed: ");
         Serial.println(String(data));
         //MasterSerial.println(String("0x01") + String(data));
         break;
-      case chargingThreshold:
+      case typechargingThreshold:
         Serial.print("Charging Threshold: ");
         Serial.println(String(data));
         break;
-      case spinnerSpeed:
+      case typespinnerSpeed:
         Serial.print("Spinner Speed: ");
         Serial.println(String(data));
         break;
-      case maxPower:
-        Serial.print("Max Power: ");
+      case typeIDError:
+        Serial.print("ID Error: ");
         Serial.println(String(data));
         break;
-      case minPower:
-#ifdef DEBUGER
-        Serial.print("Min Power: ");
-        Serial.println(String(data));
-#endif
-        break;
-      case Handshake:
+
+      case typeHandshake:
 #ifdef DEBUGER
         ACK_ID = 1;
         Serial.print("ACK: ");
@@ -112,8 +107,7 @@ void onConnect(void* arg, AsyncClient* client) {
   RegisterClient(client, ID);
 }
 void RegisterClient(void* arg, String IDReg) {
-  //Get client ID;
-  char clientID[] = "clientidtest";
+
   char connectJson[] = "{\"SocketClientType\":2,\"Code\":5,\"TargetID\":\"\",\"SendID\":\"%s\",\"CmdToken\":null,\"FirstParameter\":null,\"SecondParameter\":null}\r\n";
   AsyncClient* client = reinterpret_cast<AsyncClient*>(arg);
   if (client->space() > 300 && client->canSend()) {
@@ -127,14 +121,14 @@ void RegisterClient(void* arg, String IDReg) {
 void SendClient(void* arg, int type) {
   char message[300];
   switch (type) {
-    case updateBattery:
+    case typeupdateBattery:
       sprintf(message, jsonBattery, battery[0], battery[1], battery[2]);
       break;
-    case updateMachineStatus:
+    case typeupdateMachineStatus:
       sprintf(message, jsonParameter, "run", "forward", 1, 2);
       break;
-    case updatePanel:
-      sprintf(message, jsonPanel, 3, 4, "fine");
+    case typeupdatePanel:
+      sprintf(message, jsonPanel, 3, 4, "OK");
       break;
     default:
       Serial.println("Unknown send client cmd");
@@ -201,9 +195,9 @@ void loop() {
   if ( (unsigned long) (millis() - last_time) > 2000)
   {
     battery[2] = random(99);
-    SendClient(client, updateBattery);
-    SendClient(client, updateMachineStatus);
-    // SendClient(client, updatePanel);
+    SendClient(client, typeupdateBattery);
+    SendClient(client, typeupdateMachineStatus);
+    // SendClient(client, typeupdatePanel);
     //Test
     Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
     UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
@@ -211,7 +205,7 @@ void loop() {
   }
   if ( (unsigned long) (millis() - last_time_4) > 3000)
   {
-    SendClient(client, updateMachineStatus);
+    SendClient(client, typeupdateMachineStatus);
     last_time_4 = millis();
   }
 

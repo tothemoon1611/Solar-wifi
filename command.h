@@ -1,25 +1,24 @@
 const char Start = 0x84;
 const char End = 0x95;
-/*--------------------UPDATE TO CLIENT------------------------------*/
+/*--------------------SERVER UPDATE TO CLIENT------------------------------*/
 //char updateMode =1;
 const int typeFixedID = 2;
-const int movingSpeed = 3;
-const int chargingThreshold = 4;
-const int spinnerSpeed = 5;
-const int Stop = 6;
-const int Continue = 7;
-const int Control = 8;
-const int Mode = 9;
-const int maxPower = 10;
-const int minPower = 11;
-const int Handshake = 20;
+const int typemovingSpeed = 3;
+const int typechargingThreshold = 4;
+const int typespinnerSpeed = 5;
+const int typeStop = 6;
+const int typeContinue = 7;
+const int typeControl = 8;
+const int typeMode = 9;
+const int typeIDError = 10;
+const int typeHandshake = 20;
 
 
 /*--------------------UPDATE TO SERVER------------------------------*/
-const int updateID = 29;
-const int updateBattery = 30;
-const int updateMachineStatus = 31;
-const int updatePanel = 32;
+const int typeupdateID = 29;
+const int typeupdateBattery = 30;
+const int typeupdateMachineStatus = 31;
+const int typeupdatePanel = 32;
 
 /*--------------------UPDATE TO WIFI SLAVE ------------------------------*/
 const char IDCmd = 0x01;

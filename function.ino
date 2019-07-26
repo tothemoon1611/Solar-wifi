@@ -1,7 +1,7 @@
 void CheckWifi() {
   while (WiFi.status() != WL_CONNECTED) {
 #ifdef DEBUGER
-    Serial.println("Wifi disconnected!!!");
+    Serial.print(".");
 #endif
     delay(500);
   }
