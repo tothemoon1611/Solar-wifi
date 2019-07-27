@@ -9,19 +9,23 @@ SoftwareSerial MasterSerial(D7, D8); // RX, TX
 #define DEBUGER
 
 /* Set Wifi Configuration */
-// server CMD: {"Type":6,"Data":"20"}
+// server CMD: {"Type":20,"Data":"20"}
 
-const char *ssid = "FreeWifi";
-const char *password = "freecaicc";
-const char *ip = "192.168.43.167";
+String ssid = "";
+String password = "";
+String ip = "";
+
+
 const uint16_t port = 9999;
 
+unsigned long Timeout_ID = 4000;
 
 unsigned long last_time;
 unsigned long last_time_2;
 unsigned long last_time_3;
 unsigned long last_time_4;
 unsigned long last_time_5;
+unsigned long last_time_6;
 int i = 0;
 int battery[] = {0, 0, 0};
 String InputString = "";
@@ -37,7 +41,7 @@ int MaxPower = 0;
 int MinPower = 0;
 String ID = "";
 bool ACK_ID = 0;
-bool config_network=0;
+bool config_network = 0;
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
@@ -102,7 +106,7 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
 
 void onConnect(void* arg, AsyncClient* client) {
 #ifdef DEBUGER
-  Serial.printf("\n client has been connected to %s on port %d \n", ip, port);
+  Serial.printf("\n client has been connected to %s on port %d \n", ip.c_str(), port);
 #endif
   RegisterClient(client, ID);
 }
@@ -148,12 +152,7 @@ void setup() {
   Serial.begin(9600);
   MasterSerial.begin(9600);
   delay(20);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  CheckWifi();
-#ifdef DEBUGER
-  Serial.println("Wifi Connected!");
-#endif
+  
   while (!config_network) {
     while (ID == "") {
       if ( (unsigned long) (millis() - last_time_2) > 2000)
@@ -164,27 +163,50 @@ void setup() {
       }
       Serial_ID();
     }
-    client->onData(&handleData, client);
-    client->onConnect(&onConnect, client);
-    client->connect(ip, port);
-    last_time_5 = millis();
-    while (!ACK_ID) {
-      delay(10);
-      if ((millis() - last_time_5) > 4000) {
-        Serial.println("Timeout!!!");
+    while ((String(ssid) == "") || (String(password) == "")|| (String(ip) == "") || (String(port) == "")) {
+      if ( (unsigned long) (millis() - last_time_6) > 2000)
+      {
+        MasterSerial.print(String(Start) + String(IDError) + String("No Wifi Installed!") + String(End));
+        Serial.println(String(Start) + String(IDError) + String("No Wifi Installed!") + String(End));
+        last_time_6 = millis();
+      }
+      Serial_ID();
+    }
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid.c_str(), password.c_str());
+    CheckWifi();
+#ifdef DEBUGER
+    Serial.println("Wifi Connected!");
+#endif
+    for (i = 0 ; i < 5; i++) {
+      client->onData(&handleData, client);
+      client->onConnect(&onConnect, client);
+      client->connect(ip.c_str(), port);
+      last_time_5 = millis();
+      while (!ACK_ID) {
+        delay(10);
+        if ((millis() - last_time_5) > Timeout_ID) {
+          Serial.println("Timeout!!!");
+          Serial.println("Retry!!!");
+          break;
+        }
+      }
+      if (ACK_ID && (millis() - last_time_5) < Timeout_ID) {
+        config_network = 1;
+        UpdatetoMaster(String(ACKIDCmd), String("OK"));
         break;
       }
     }
-    if (ACK_ID && (millis() - last_time_5) < 4000) config_network = 1;
-    else ID = "";
+    if (i == 5) {
+      Serial.println("Error Send ID to Server!!!");
+      ID = "";
+    }
   }
   Serial.println("Socket Connected!!!");
   last_time_3 = millis();
 }
 
 void loop() {
-
-
   CheckWifi();
   if ( (unsigned long) (millis() - last_time_3) > 2000)
   {
@@ -208,5 +230,4 @@ void loop() {
     SendClient(client, typeupdateMachineStatus);
     last_time_4 = millis();
   }
-
 }

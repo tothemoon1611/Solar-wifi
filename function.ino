@@ -1,7 +1,7 @@
 void CheckWifi() {
   while (WiFi.status() != WL_CONNECTED) {
 #ifdef DEBUGER
-    Serial.print(".");
+    Serial.println(".");
 #endif
     delay(500);
   }
@@ -12,7 +12,7 @@ void CheckSocket() {
   if (!client->connected()) {
     client->onData(&handleData, client);
     client->onConnect(&onConnect, client);
-    client->connect(ip, port);
+    client->connect(ip.c_str(), port);
   }
 }
 void Serial_ID() {
@@ -38,6 +38,27 @@ void Serial_ID() {
         Serial.print("ID: ");
         Serial.println(ID);
         break;
+      case WifiSSID:
+        ssid = InputString;
+        Serial.print("ssid: ");
+        Serial.println(ssid);
+        break;
+      case WifiPass:
+        password = InputString;
+        Serial.print("password: ");
+        Serial.println(password);
+        break;
+      case WifiIP:
+        ip = InputString;
+        Serial.print("ip: ");
+        Serial.println(ip);
+        break;
+        //      case WifiPort:
+        //        port = atol(InputString.c_str());
+        //        // RegisterClient(client, ID); /// dang ky ID moi
+        //        Serial.print("port: ");
+        //        Serial.println(port);
+        //        break;
     }
     InputString = "";
     StringComplete = false;
@@ -85,37 +106,37 @@ void Serial_Wifi() {
         break;
       case updateEnergyBattery:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Energy Battery: ");
         Serial.println(MaxPower);
 #endif
         break;
       case updateStatusParameter:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Status Parameter: ");
         Serial.println(MinPower);
 #endif
         break;
       case updateDirectionParameter:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Direction Parameter: ");
         Serial.println(MinPower);
 #endif
         break;
       case updateLocationParameter:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Location Parameter: ");
         Serial.println(MinPower);
 #endif
         break;
       case updateLocationPanel:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Location Panel: ");
         Serial.println(MinPower);
 #endif
         break;
       case updateStatusPanel:
 #ifdef DEBUGER
-        Serial.print("Set Moving Speed: ");
+        Serial.print("Set Status Panel: ");
         Serial.println(MinPower);
 #endif
         break;

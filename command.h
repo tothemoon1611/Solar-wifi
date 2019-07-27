@@ -24,6 +24,11 @@ const int typeupdatePanel = 32;
 const char IDCmd = 0x01;
 const char DataCmd = 0x02;
 const char WifiCmd = 0x03;
+const char WifiSSID = 0x0A;
+const char WifiPass = 0x0B;
+const char WifiIP = 0x0C;
+const char WifiPort = 0x0D;
+const char ACKIDCmd = 0x0E;
 
 const char updateCurrentBattery = 0x11;
 const char updateVoltageBattery = 0x12;
@@ -38,7 +43,7 @@ const char updateStatusPanel = 0x21;
 /*--------------------UPDATE WIFI TO MASTER------------------------------*/
 const char AssignedIDCmd = 0x04;
 const char DataRecCmd = 0x05;
-const char Timeout = 0x06;
+const char TimeoutError = 0x06;
 const char IDError = 0x07;
 
 const char setFixedID = 0x40;
