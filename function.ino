@@ -59,6 +59,11 @@ void Serial_ID() {
         //        Serial.print("port: ");
         //        Serial.println(port);
         //        break;
+        //      case ACKIDCmd:
+        //        ACK_ID = InputString.toInt();
+        //        Serial.print("ACKID: ");
+        //        Serial.println(ACK_ID);
+        //        break;
     }
     InputString = "";
     StringComplete = false;
@@ -91,14 +96,14 @@ void Serial_Wifi() {
         // RegisterClient(client, ID); /// dang ky ID moi
         break;
       case updateCurrentBattery:
-        battery[0] = InputString.toInt();
+        battery[0] = InputString.toFloat();
 #ifdef DEBUGER
         Serial.print("Set Current Battery: ");
         Serial.println(battery[0]);
 #endif
         break;
       case updateVoltageBattery:
-        battery[1] = InputString.toInt();
+        battery[1] = InputString.toFloat();
 #ifdef DEBUGER
         Serial.print("Set Voltage Battery: ");
         Serial.println(battery[1]);

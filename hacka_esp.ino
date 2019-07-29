@@ -27,7 +27,7 @@ unsigned long last_time_4;
 unsigned long last_time_5;
 unsigned long last_time_6;
 int i = 0;
-int battery[] = {0, 0, 0};
+float battery[] = {0, 0, 0};
 String InputString = "";
 String DisplayString = "";
 boolean StringComplete = false;
@@ -40,10 +40,10 @@ int SpinnerSpeed = 0;
 int MaxPower = 0;
 int MinPower = 0;
 String ID = "";
-bool ACK_ID = 0;
+int ACK_ID = 0;
 bool config_network = 0;
 
-char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%d,'voltage':%d,'energy':%d}\"}\r\n";
+char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
 char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
 
@@ -90,7 +90,10 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
         Serial.print("ID Error: ");
         Serial.println(String(data));
         break;
-
+      case typeFixedID:
+        Serial.print("FixedID: ");
+        Serial.println(String(data));
+        break;
       case typeHandshake:
 #ifdef DEBUGER
         ACK_ID = 1;
@@ -152,7 +155,7 @@ void setup() {
   Serial.begin(9600);
   MasterSerial.begin(9600);
   delay(20);
-  
+
   while (!config_network) {
     while (ID == "") {
       if ( (unsigned long) (millis() - last_time_2) > 2000)
@@ -163,7 +166,7 @@ void setup() {
       }
       Serial_ID();
     }
-    while ((String(ssid) == "") || (String(password) == "")|| (String(ip) == "") || (String(port) == "")) {
+    while ((String(ssid) == "") || (String(password) == "") || (String(ip) == "") || (String(port) == "")) {
       if ( (unsigned long) (millis() - last_time_6) > 2000)
       {
         MasterSerial.print(String(Start) + String(IDError) + String("No Wifi Installed!") + String(End));
@@ -200,6 +203,7 @@ void setup() {
     if (i == 5) {
       Serial.println("Error Send ID to Server!!!");
       ID = "";
+      ACK_ID = 0;
     }
   }
   Serial.println("Socket Connected!!!");
