@@ -53,17 +53,19 @@ void Serial_ID() {
         Serial.print("ip: ");
         Serial.println(ip);
         break;
-        //      case WifiPort:
-        //        port = atol(InputString.c_str());
-        //        // RegisterClient(client, ID); /// dang ky ID moi
-        //        Serial.print("port: ");
-        //        Serial.println(port);
-        //        break;
-        //      case ACKIDCmd:
-        //        ACK_ID = InputString.toInt();
-        //        Serial.print("ACKID: ");
-        //        Serial.println(ACK_ID);
-        //        break;
+      //      case WifiPort:
+      //        port = atol(InputString.c_str());
+      //        // RegisterClient(client, ID); /// dang ky ID moi
+      //        Serial.print("port: ");
+      //        Serial.println(port);
+      //        break;
+      //      case ACKIDCmd:
+      //        ACK_ID = InputString.toInt();
+      //        Serial.print("ACKID: ");
+      //        Serial.println(ACK_ID);
+      //        break;
+
+
     }
     InputString = "";
     StringComplete = false;

@@ -53,8 +53,8 @@ const char setChargeThreshold = 0x43;
 const char setMinPower = 0x44;
 const char setMaxPower = 0x45;
 
-const char setBuildMap = 0x50;
-const char setFullMode = 0x51;
+const char setMode = 0x50;
+const char setBuildMap = 0x51;
 const char setCleanMode = 0x52;
 const char setMeasureMode = 0x53;
 const char setChargeMode = 0x54;

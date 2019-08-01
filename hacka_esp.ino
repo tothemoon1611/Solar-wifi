@@ -93,11 +93,26 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
       case typeFixedID:
         Serial.print("FixedID: ");
         Serial.println(String(data));
+        UpdatetoMaster(String(setFixedID), String(data));
+        break;
+      case typeMode:
+#ifdef DEBUGER
+        UpdatetoMaster(String(setMode), String(data));
+        Serial.print("setMode: ");
+        Serial.println(String(data));
+#endif
         break;
       case typeHandshake:
 #ifdef DEBUGER
         ACK_ID = 1;
         Serial.print("ACK: ");
+        Serial.println(String(data));
+#endif
+        break;
+      case typeStop:
+        UpdatetoMaster(String(setStop), String(data));
+#ifdef DEBUGER
+        Serial.print("Stop: ");
         Serial.println(String(data));
 #endif
         break;
@@ -222,7 +237,7 @@ void loop() {
   {
     battery[2] = random(99);
     SendClient(client, typeupdateBattery);
-    SendClient(client, typeupdateMachineStatus);
+    //SendClient(client, typeupdateMachineStatus);
     // SendClient(client, typeupdatePanel);
     //Test
     Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
