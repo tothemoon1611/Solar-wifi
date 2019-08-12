@@ -7,8 +7,8 @@ void CheckWifi() {
     delay(500);
     if ( (unsigned long) (millis() - WifiTimeout) > 7000)
       {
-        MasterSerial.print(String(Start) + String(typeServerError) + String("Connect Server Failed") + String(End));
-        Serial.println(String(Start) + String(typeServerError) + String("No Wifi Installed!") + String(End));
+        MasterSerial.print(String(Start) + String(NetworkError) + String("Connect Server Failed") + String(End));
+        Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
         WifiTimeout = millis() ;
         break ;
       }
@@ -141,7 +141,7 @@ void Serial_Wifi() {
         Serial.println(MinPower);
 #endif
         break;
-      case updateLocationParameter:
+      case updateCollumnPanelParameter:
 #ifdef DEBUGER
         Serial.print("Set Location Parameter: ");
         Serial.println(MinPower);

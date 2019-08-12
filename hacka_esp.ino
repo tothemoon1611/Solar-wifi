@@ -1,3 +1,4 @@
+// modified on 16h 12/8/2019
 //{"Type":6,"Data":"20"}
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
@@ -214,7 +215,7 @@ void setup() {
       }
       if (ACK_ID && (millis() - last_time_5) < Timeout_ID) {
         config_network = 1;
-        UpdatetoMaster(String(ACKIDCmd), String("OK"));
+        UpdatetoMaster(String(ACKSERVERCmd), String("OK"));
         break;
       }
     }
