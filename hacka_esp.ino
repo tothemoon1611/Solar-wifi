@@ -122,6 +122,7 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
   }
 }
 
+
 void onConnect(void* arg, AsyncClient* client) {
 #ifdef DEBUGER
   Serial.printf("\n client has been connected to %s on port %d \n", ip.c_str(), port);
@@ -139,6 +140,7 @@ void RegisterClient(void* arg, String IDReg) {
     client->send();
   }
 }
+
 
 void SendClient(void* arg, int type) {
   char message[300];
@@ -164,6 +166,7 @@ void SendClient(void* arg, int type) {
     client->send();
   }
 }
+
 
 AsyncClient* client = new AsyncClient;
 void setup() {
@@ -224,6 +227,7 @@ void setup() {
   Serial.println("Socket Connected!!!");
   last_time_3 = millis();
 }
+
 
 void loop() {
   CheckWifi();

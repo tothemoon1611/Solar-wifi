@@ -12,14 +12,14 @@ const int typeControl = 8;
 const int typeMode = 9;
 const int typeIDError = 10;
 const int typeHandshake = 20;
-
+const int typeServerError = 34 ;
 
 /*--------------------UPDATE TO SERVER------------------------------*/
 const int typeupdateID = 29;
 const int typeupdateBattery = 30;
 const int typeupdateMachineStatus = 31;
 const int typeupdatePanel = 32;
-
+const int typeupdateerror = 33 ;
 /*--------------------UPDATE TO WIFI SLAVE ------------------------------*/
 const char IDCmd = 0x01;
 const char DataCmd = 0x02;

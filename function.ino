@@ -1,11 +1,20 @@
 void CheckWifi() {
+  unsigned long WifiTimeout = millis() ;
   while (WiFi.status() != WL_CONNECTED) {
 #ifdef DEBUGER
     Serial.println(".");
 #endif
     delay(500);
+    if ( (unsigned long) (millis() - WifiTimeout) > 7000)
+      {
+        MasterSerial.print(String(Start) + String(typeServerError) + String("Connect Server Failed") + String(End));
+        Serial.println(String(Start) + String(typeServerError) + String("No Wifi Installed!") + String(End));
+        WifiTimeout = millis() ;
+        break ;
+      }
   }
 }
+
 void CheckSocket() {
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
@@ -15,6 +24,7 @@ void CheckSocket() {
     client->connect(ip.c_str(), port);
   }
 }
+
 void Serial_ID() {
   if (MasterSerial.available())
   {
@@ -71,11 +81,13 @@ void Serial_ID() {
     StringComplete = false;
   }
 }
+
 void Serial_Wifi() {
 
   if (MasterSerial.available())
   {
     char inChar = (char)MasterSerial.read();
+     Serial.println(inChar) ;
     if (inChar == Start) SerialRecv = true;
     if (inChar == End)
     {
@@ -154,6 +166,7 @@ void Serial_Wifi() {
     StringComplete = false;
   }
 }
+
 void UpdatetoMaster(String Command, String data) {
   MasterSerial.print(String(Start) + Command + data + String(End));
 }
