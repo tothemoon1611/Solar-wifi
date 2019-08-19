@@ -16,13 +16,33 @@ void CheckWifi() {
 }
 
 void CheckSocket() {
+  if (!isAllowCheck){
+    return;
+  }
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
   if (!client->connected()) {
+   isAllowCheck = false;
+   ReconnectSocket();
+  } else {
+    isReconnecting = false;
+    isAllowCheck = true;
+  }
+}
+void StartCheckSocket() {
+  if (isAllowCheck) {
+    CheckSocket();
+  }
+   else if (!isReconnecting) {
+    ReconnectSocket();
+   }
+}
+void ReconnectSocket() {
+    isReconnecting = true; 
     client->onData(&handleData, client);
     client->onConnect(&onConnect, client);
     client->connect(ip.c_str(), port);
-  }
+    isReconnecting = false;
 }
 
 void Serial_ID() {
@@ -87,7 +107,6 @@ void Serial_Wifi() {
   if (MasterSerial.available())
   {
     char inChar = (char)MasterSerial.read();
-     Serial.println(inChar) ;
     if (inChar == Start) SerialRecv = true;
     if (inChar == End)
     {

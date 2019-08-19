@@ -109,6 +109,7 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
         Serial.print("ACK: ");
         Serial.println(String(data));
 #endif
+        UpdatetoMaster(String(ACKSERVERCmd), String(ACK_ID));
         break;
       case typeStop:
         UpdatetoMaster(String(setStop), String(data));
@@ -128,6 +129,8 @@ void onConnect(void* arg, AsyncClient* client) {
 #ifdef DEBUGER
   Serial.printf("\n client has been connected to %s on port %d \n", ip.c_str(), port);
 #endif
+  isAllowCheck = true;
+  isReconnecting = false;
   RegisterClient(client, ID);
 }
 void RegisterClient(void* arg, String IDReg) {
@@ -200,6 +203,8 @@ void setup() {
 #ifdef DEBUGER
     Serial.println("Wifi Connected!");
 #endif
+    bool isAllowCheck = true;
+    bool isReconnecting = false;
     for (i = 0 ; i < 5; i++) {
       client->onData(&handleData, client);
       client->onConnect(&onConnect, client);
@@ -245,8 +250,8 @@ void loop() {
     //SendClient(client, typeupdateMachineStatus);
     // SendClient(client, typeupdatePanel);
     //Test
-    Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
-    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
+//    Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
+//    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
     last_time = millis();
   }
   if ( (unsigned long) (millis() - last_time_4) > 3000)

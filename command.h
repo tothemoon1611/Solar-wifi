@@ -67,3 +67,9 @@ const char setContinue = 0x56;
 /*--------------------UPDATE TO CAMERA SLAVE ------------------------------*/
 const char CapImg = 0x08;
 const char StreamCmd = 0x09;
+
+/*--------------------UPDATE ENCODER TO MASTER ------------------------------*/
+const char setEncoder = 0x60;
+/*---------------ATTRS------------------------*/
+bool isAllowCheck = true;
+bool isReconnecting = false;
