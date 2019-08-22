@@ -5,44 +5,52 @@ void CheckWifi() {
     Serial.println(".");
 #endif
     delay(500);
-    if ( (unsigned long) (millis() - WifiTimeout) > 7000)
-      {
-        MasterSerial.print(String(Start) + String(NetworkError) + String("Connect Server Failed") + String(End));
-        Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-        WifiTimeout = millis() ;
-        break ;
-      }
+    if ( (unsigned long) (millis() - WifiTimeout) > 3000)
+    {
+      MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
+      Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
+      WifiTimeout = millis() ;
+    }
   }
 }
 
 void CheckSocket() {
-  if (!isAllowCheck){
+  bool recheck = 0 ; // toan them luc 7h58pm
+  if (!isAllowCheck) {
     return;
   }
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
   if (!client->connected()) {
-   isAllowCheck = false;
-   ReconnectSocket();
+    if ( (unsigned long) (millis() - ServerTimeout) > 3000)
+    {
+      MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));
+      Serial.println(String(Start) + String(ServerError) + String("Connect Server Failed!") + String(End));
+      ServerTimeout = millis() ;    
+    }
+    isAllowCheck = false;
+    recheck = 1 ;      // toan them luc 7h58pm
+    ReconnectSocket();
   } else {
     isReconnecting = false;
     isAllowCheck = true;
+    if( recheck == 1) { recheck = 0;  MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End)); } // toan them luc 7h58pm
   }
 }
 void StartCheckSocket() {
   if (isAllowCheck) {
     CheckSocket();
   }
-   else if (!isReconnecting) {
+  else if (!isReconnecting) {
     ReconnectSocket();
-   }
+  }
 }
 void ReconnectSocket() {
-    isReconnecting = true; 
-    client->onData(&handleData, client);
-    client->onConnect(&onConnect, client);
-    client->connect(ip.c_str(), port);
-    isReconnecting = false;
+  isReconnecting = true;
+  client->onData(&handleData, client);
+  client->onConnect(&onConnect, client);
+  client->connect(ip.c_str(), port);
+  isReconnecting = false;
 }
 
 void Serial_ID() {
@@ -83,17 +91,17 @@ void Serial_ID() {
         Serial.print("ip: ");
         Serial.println(ip);
         break;
-      //      case WifiPort:
-      //        port = atol(InputString.c_str());
-      //        // RegisterClient(client, ID); /// dang ky ID moi
-      //        Serial.print("port: ");
-      //        Serial.println(port);
-      //        break;
-      //      case ACKIDCmd:
-      //        ACK_ID = InputString.toInt();
-      //        Serial.print("ACKID: ");
-      //        Serial.println(ACK_ID);
-      //        break;
+        //      case WifiPort:
+        //        port = atol(InputString.c_str());
+        //        // RegisterClient(client, ID); /// dang ky ID moi
+        //        Serial.print("port: ");
+        //        Serial.println(port);
+        //        break;
+        //      case ACKIDCmd:
+        //        ACK_ID = InputString.toInt();
+        //        Serial.print("ACKID: ");
+        //        Serial.println(ACK_ID);
+        //        break;
 
 
     }
@@ -160,10 +168,18 @@ void Serial_Wifi() {
         Serial.println(MinPower);
 #endif
         break;
-      case updateCollumnPanelParameter:
+      case updateStringPanelParameter:
+        StrPanel = InputString.toInt();
 #ifdef DEBUGER
-        Serial.print("Set Location Parameter: ");
-        Serial.println(MinPower);
+        Serial.print("Set String: ");
+        Serial.println(StrPanel);
+#endif
+        break;
+      case updateCollumnPanelParameter:
+        PanPos = InputString.toInt();
+#ifdef DEBUGER
+        Serial.print("Set Collumn: ");
+        Serial.println(PanPos);
 #endif
         break;
       case updateLocationPanel:
