@@ -14,30 +14,35 @@ void CheckWifi() {
   }
 }
 
-void CheckSocket() {
-  bool recheck = 0 ; // toan them luc 7h58pm
-  if (!isAllowCheck) {
-    return;
-  }
+void CheckSocket()     // cu 2s thi lap lai ham nay 1 lan 
+{                                                           // toan them luc 7h58pm 21/8/19
+//  if (!isAllowCheck) {
+//    return;
+//  }
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
-  if (!client->connected()) {
-    if ( (unsigned long) (millis() - ServerTimeout) > 3000)
+  if (!client->connected()) 
     {
-      MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));
-      Serial.println(String(Start) + String(ServerError) + String("Connect Server Failed!") + String(End));
-      ServerTimeout = millis() ;    
+//      if ( (unsigned long) (millis() - ServerTimeout) > 3000)
+//      {
+        if( RecheckSocket == 0) { MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End)); } // toan them luc 7h30pm 22/8/19
+        Serial.println("Connect Server Failed!");
+        ServerTimeout = millis() ;    
+//      }
+      isAllowCheck = false;
+      RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
+      ReconnectSocket();
     }
-    isAllowCheck = false;
-    recheck = 1 ;      // toan them luc 7h58pm
-    ReconnectSocket();
-  } else {
-    isReconnecting = false;
-    isAllowCheck = true;
-    if( recheck == 1) { recheck = 0;  MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End)); } // toan them luc 7h58pm
-  }
+    else {
+        isReconnecting = false;
+        isAllowCheck = true;
+        if( RecheckSocket == 1) { RecheckSocket = 0;  MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End)); } // toan them luc 7h58pm 21/8/19
+        Serial.println("Connect Server Successed !");
+      }
 }
-void StartCheckSocket() {
+
+void StartCheckSocket() 
+{
   if (isAllowCheck) {
     CheckSocket();
   }
@@ -45,6 +50,7 @@ void StartCheckSocket() {
     ReconnectSocket();
   }
 }
+
 void ReconnectSocket() {
   isReconnecting = true;
   client->onData(&handleData, client);

@@ -45,7 +45,9 @@ int ACK_ID = 0;
 bool config_network = 0;
 int StrPanel = 2;
 int PanPos = 0;
- unsigned long ServerTimeout = millis() ;
+unsigned long ServerTimeout = millis() ;
+
+bool RecheckSocket = 0 ;   
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";

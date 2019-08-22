@@ -47,8 +47,9 @@ const char DataRecCmd = 0x05;
 const char TimeoutError = 0x30;
 const char IDError = 0x31;
 const char NetworkError = 0x32;
-const char ServerError = 0x33 ;
-const char ServerOK = 0x34 ;    // toan them luc 7h58pm
+const char NetworkOk = 0x33;
+const char ServerError = 0x34 ;
+const char ServerOK = 0x35 ;    // toan them luc 7h58pm
 
 const char setFixedID = 0x40;
 const char setMovingSpeed = 0x41;
