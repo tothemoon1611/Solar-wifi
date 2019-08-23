@@ -1,47 +1,99 @@
-void CheckWifi() {
+void CheckWifi()
+{
   unsigned long WifiTimeout = millis() ;
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED) 
+  {
 #ifdef DEBUGER
     Serial.println(".");
 #endif
     delay(500);
-    if ( (unsigned long) (millis() - WifiTimeout) > 3000)
+    if ( (unsigned long) (millis() - WifiTimeout) > 5000)
     {
-      MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-      Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-      WifiTimeout = millis() ;
+      if( RecheckWifi == 0) 
+        {
+          RecheckWifi = 1 ;
+          MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
+          Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
+          WifiTimeout = millis() ;
+        }
     }
   }
+  if( RecheckWifi == 1 ) 
+    {
+      RecheckWifi = 0 ;
+      MasterSerial.print(String(Start) + String(NetworkOK) + String("No Wifi Installed!") + String(End));
+      Serial.println(String(Start) + String(NetworkOK) + String("No Wifi Installed!") + String(End));
+    }
 }
 
-void CheckSocket()     // cu 2s thi lap lai ham nay 1 lan 
-{                                                           // toan them luc 7h58pm 21/8/19
-//  if (!isAllowCheck) {
-//    return;
+
+//void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
+//{                                                           // toan them luc 7h58pm 21/8/19
+//  if (!isAllowCheck)
+//    {
+//      return;
+//    }
+//  Serial.print("Check Socket: ");
+//  Serial.println(client->connected());
+//  if (!client->connected())
+//    {
+//      if ( RecheckSocket == 0) {
+//        MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));  // toan them luc 7h30pm 22/8/19
+//      }
+//      Serial.println("Connect Server Failed!");
+//      ServerTimeout = millis() ;
+//      //      }
+//      isAllowCheck = false;
+//      RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
+//      ReconnectSocket();
+//    }
+//  else {
+//    isReconnecting = false;
+//    isAllowCheck = true;
+//    if ( RecheckSocket == 1) 
+//      {
+//        RecheckSocket = 0;   // toan them luc 7h58pm 21/8/19
+//        MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End));
+//      }
+//    Serial.println("Connect Server Successed !");
 //  }
+//}
+//
+//void StartCheckSocket()
+//{
+//  if (isAllowCheck) {
+//    CheckSocket();
+//  }
+//  else if (!isReconnecting) {
+//    ReconnectSocket();
+//  }
+//}
+
+
+void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
+{                                                           // toan them luc 7h58pm 21/8/19
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
-  if (!client->connected()) 
+  if (!client->connected())
     {
-//      if ( (unsigned long) (millis() - ServerTimeout) > 3000)
-//      {
-        if( RecheckSocket == 0) { MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End)); } // toan them luc 7h30pm 22/8/19
-        Serial.println("Connect Server Failed!");
-        ServerTimeout = millis() ;    
-//      }
-      isAllowCheck = false;
+      if ( RecheckSocket == 0) { MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End)); }  // toan them luc 7h30pm 22/8/19
+      Serial.println("Connect Server Failed!");
+      ServerTimeout = millis() ;
       RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
       ReconnectSocket();
     }
     else {
-        isReconnecting = false;
-        isAllowCheck = true;
-        if( RecheckSocket == 1) { RecheckSocket = 0;  MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End)); } // toan them luc 7h58pm 21/8/19
-        Serial.println("Connect Server Successed !");
-      }
+      isReconnecting = false;
+      if ( RecheckSocket == 1) 
+        {
+          RecheckSocket = 0;   // toan them luc 7h58pm 21/8/19
+          MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End));
+        }
+      Serial.println("Connect Server Successed !");
+    }
 }
 
-void StartCheckSocket() 
+void StartCheckSocket()
 {
   if (isAllowCheck) {
     CheckSocket();
@@ -50,8 +102,8 @@ void StartCheckSocket()
     ReconnectSocket();
   }
 }
-
-void ReconnectSocket() {
+void ReconnectSocket()
+{
   isReconnecting = true;
   client->onData(&handleData, client);
   client->onConnect(&onConnect, client);
@@ -59,7 +111,9 @@ void ReconnectSocket() {
   isReconnecting = false;
 }
 
-void Serial_ID() {
+
+void Serial_ID()
+{
   if (MasterSerial.available())
   {
     char inChar = (char)MasterSerial.read();
@@ -116,8 +170,8 @@ void Serial_ID() {
   }
 }
 
-void Serial_Wifi() {
-
+void Serial_Wifi()
+{
   if (MasterSerial.available())
   {
     char inChar = (char)MasterSerial.read();
@@ -208,6 +262,9 @@ void Serial_Wifi() {
   }
 }
 
-void UpdatetoMaster(String Command, String data) {
+
+
+void UpdatetoMaster(String Command, String data)
+{
   MasterSerial.print(String(Start) + Command + data + String(End));
 }

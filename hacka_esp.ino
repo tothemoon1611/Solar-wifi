@@ -48,7 +48,8 @@ int PanPos = 0;
 unsigned long ServerTimeout = millis() ;
 
 bool RecheckSocket = 0 ;   
-
+bool RecheckWifi = 0 ;
+  
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
 char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
