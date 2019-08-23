@@ -46,6 +46,7 @@ bool config_network = 0;
 int StrPanel = 2;
 int PanPos = 0;
 unsigned long ServerTimeout = millis() ;
+unsigned long WifiTimeout ;
 
 bool RecheckSocket = 0 ;   
 bool RecheckWifi = 0 ;
@@ -238,6 +239,7 @@ void setup() {
   }
   Serial.println("Socket Connected!!!");
   last_time_3 = millis();
+  WifiTimeout = millis() ;
 }
 
 

@@ -1,30 +1,26 @@
 void CheckWifi()
 {
-  unsigned long WifiTimeout = millis() ;
   while (WiFi.status() != WL_CONNECTED) 
   {
 #ifdef DEBUGER
     Serial.println(".");
 #endif
-    delay(500);
-    if ( (unsigned long) (millis() - WifiTimeout) > 5000)
-    {
+    delay(2000);
       if( RecheckWifi == 0) 
         {
           RecheckWifi = 1 ;
           MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
           Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-          WifiTimeout = millis() ;
         }
     }
-  }
   if( RecheckWifi == 1 ) 
     {
       RecheckWifi = 0 ;
-      MasterSerial.print(String(Start) + String(NetworkOK) + String("No Wifi Installed!") + String(End));
-      Serial.println(String(Start) + String(NetworkOK) + String("No Wifi Installed!") + String(End));
+      MasterSerial.print(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
+      Serial.println(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
     }
 }
+
 
 
 //void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
