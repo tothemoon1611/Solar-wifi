@@ -1,17 +1,18 @@
 void CheckWifi()
 {
   while (WiFi.status() != WL_CONNECTED) 
-  {
+    {
 #ifdef DEBUGER
     Serial.println(".");
 #endif
-    delay(2000);
+    delay(500);
       if( RecheckWifi == 0) 
         {
           RecheckWifi = 1 ;
           MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
           Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
         }
+        if (client->connected()) client->close(true);
     }
   if( RecheckWifi == 1 ) 
     {
@@ -20,50 +21,6 @@ void CheckWifi()
       Serial.println(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
     }
 }
-
-
-
-//void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
-//{                                                           // toan them luc 7h58pm 21/8/19
-//  if (!isAllowCheck)
-//    {
-//      return;
-//    }
-//  Serial.print("Check Socket: ");
-//  Serial.println(client->connected());
-//  if (!client->connected())
-//    {
-//      if ( RecheckSocket == 0) {
-//        MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));  // toan them luc 7h30pm 22/8/19
-//      }
-//      Serial.println("Connect Server Failed!");
-//      ServerTimeout = millis() ;
-//      //      }
-//      isAllowCheck = false;
-//      RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
-//      ReconnectSocket();
-//    }
-//  else {
-//    isReconnecting = false;
-//    isAllowCheck = true;
-//    if ( RecheckSocket == 1) 
-//      {
-//        RecheckSocket = 0;   // toan them luc 7h58pm 21/8/19
-//        MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End));
-//      }
-//    Serial.println("Connect Server Successed !");
-//  }
-//}
-//
-//void StartCheckSocket()
-//{
-//  if (isAllowCheck) {
-//    CheckSocket();
-//  }
-//  else if (!isReconnecting) {
-//    ReconnectSocket();
-//  }
-//}
 
 
 void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
@@ -101,6 +58,7 @@ void StartCheckSocket()
 void ReconnectSocket()
 {
   isReconnecting = true;
+  Serial.println("Reconnecting socket !");
   client->onData(&handleData, client);
   client->onConnect(&onConnect, client);
   client->connect(ip.c_str(), port);

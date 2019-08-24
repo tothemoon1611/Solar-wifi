@@ -48,9 +48,9 @@ int PanPos = 0;
 unsigned long ServerTimeout = millis() ;
 unsigned long WifiTimeout ;
 
-bool RecheckSocket = 0 ;   
+bool RecheckSocket = 0 ;
 bool RecheckWifi = 0 ;
-  
+
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
 char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
 char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
@@ -104,11 +104,31 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
         UpdatetoMaster(String(setFixedID), String(data));
         break;
       case typeMode:
+        if (String(data) == "8") {
+          UpdatetoMaster(String(setStop), String(data));
 #ifdef DEBUGER
-        UpdatetoMaster(String(setMode), String(data));
-        Serial.print("setMode: ");
-        Serial.println(String(data));
+          Serial.print("setStop: ");
+          Serial.println(String(data));
 #endif
+        }
+        else {
+          if (String(data) == "9") {
+            UpdatetoMaster(String(setContinue), String(data));
+#ifdef DEBUGER
+            Serial.print("setContinue: ");
+            Serial.println(String(data));
+#endif
+          }
+          else
+          {
+            UpdatetoMaster(String(setMode), String(data));
+#ifdef DEBUGER
+            Serial.print("setMode: ");
+            Serial.println(String(data));
+#endif
+          }
+        }
+
         break;
       case typeHandshake:
 #ifdef DEBUGER
@@ -258,8 +278,8 @@ void loop() {
     //SendClient(client, typeupdateMachineStatus);
     // SendClient(client, typeupdatePanel);
     //Test
-//    Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
-//    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
+    //    Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
+    //    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
     last_time = millis();
   }
   if ( (unsigned long) (millis() - last_time_4) > 3000)
