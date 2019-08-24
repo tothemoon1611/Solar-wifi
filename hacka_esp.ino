@@ -104,7 +104,7 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
         UpdatetoMaster(String(setFixedID), String(data));
         break;
       case typeMode:
-        if (String(data) == "8") {
+        if (String(data) == "7") {
           UpdatetoMaster(String(setStop), String(data));
 #ifdef DEBUGER
           Serial.print("setStop: ");
@@ -112,7 +112,7 @@ static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
 #endif
         }
         else {
-          if (String(data) == "9") {
+          if (String(data) == "8") {
             UpdatetoMaster(String(setContinue), String(data));
 #ifdef DEBUGER
             Serial.print("setContinue: ");
