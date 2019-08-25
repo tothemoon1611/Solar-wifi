@@ -27,6 +27,7 @@ unsigned long last_time_3;
 unsigned long last_time_4;
 unsigned long last_time_5;
 unsigned long last_time_6;
+unsigned long last_time_7;
 int i = 0;
 float battery[] = {0, 0, 0};
 String InputString = "";
@@ -45,6 +46,11 @@ int ACK_ID = 0;
 bool config_network = 0;
 int StrPanel = 2;
 int PanPos = 0;
+int CAMStrPanel = 2;
+int CAMPanPos = 0;
+int Status = 0;
+int Direction = 0;
+int PanelStatus = 1;
 unsigned long ServerTimeout = millis() ;
 unsigned long WifiTimeout ;
 
@@ -52,8 +58,8 @@ bool RecheckSocket = 0 ;
 bool RecheckWifi = 0 ;
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
-char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%s','direction':'%s','string':%d, 'collumn':%d}\"}\r\n";
-char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%s'}\"}\r\n";
+char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%d','direction':'%d','string':%d, 'collumn':%d}\"}\r\n";
+char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%d'}\"}\r\n";
 
 /* event callbacks */
 static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
@@ -180,10 +186,10 @@ void SendClient(void* arg, int type) {
       sprintf(message, jsonBattery, battery[0], battery[1], battery[2]);
       break;
     case typeupdateMachineStatus:
-      sprintf(message, jsonParameter, "run", "forward", StrPanel, PanPos);
+      sprintf(message, jsonParameter, Status, Direction, StrPanel, PanPos);
       break;
     case typeupdatePanel:
-      sprintf(message, jsonPanel, 3, 4, "OK");
+      sprintf(message, jsonPanel, CAMStrPanel, CAMPanPos, PanelStatus);
       break;
     default:
       Serial.println("Unknown send client cmd");
@@ -264,6 +270,8 @@ void setup() {
 
 
 void loop() {
+  CAMStrPanel = StrPanel;
+  CAMPanPos = PanPos;
   CheckWifi();
   if ( (unsigned long) (millis() - last_time_3) > 2000)
   {
@@ -275,16 +283,17 @@ void loop() {
   {
     battery[2] = random(99);
     SendClient(client, typeupdateBattery);
-    //SendClient(client, typeupdateMachineStatus);
-    // SendClient(client, typeupdatePanel);
-    //Test
-    //    Serial.println(String(Start) + String(setMovingSpeed) + String(battery[0]) + String(End));
-    //    UpdatetoMaster(String(setMovingSpeed), String(battery[0]));
+
     last_time = millis();
   }
   if ( (unsigned long) (millis() - last_time_4) > 3000)
   {
     SendClient(client, typeupdateMachineStatus);
     last_time_4 = millis();
+  }
+    if ( (unsigned long) (millis() - last_time_7) > 4000)
+  {
+    SendClient(client, typeupdatePanel);
+    last_time_7 = millis();
   }
 }

@@ -1,49 +1,51 @@
 void CheckWifi()
 {
-  while (WiFi.status() != WL_CONNECTED) 
-    {
+  while (WiFi.status() != WL_CONNECTED)
+  {
 #ifdef DEBUGER
     Serial.println(".");
 #endif
     delay(500);
-      if( RecheckWifi == 0) 
-        {
-          RecheckWifi = 1 ;
-          MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-          Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
-        }
-        if (client->connected()) client->close(true);
-    }
-  if( RecheckWifi == 1 ) 
+    if ( RecheckWifi == 0)
     {
-      RecheckWifi = 0 ;
-      MasterSerial.print(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
-      Serial.println(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
+      RecheckWifi = 1 ;
+      MasterSerial.print(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
+      Serial.println(String(Start) + String(NetworkError) + String("No Wifi Installed!") + String(End));
     }
+    if (client->connected()) client->close(true);
+  }
+  if ( RecheckWifi == 1 )
+  {
+    RecheckWifi = 0 ;
+    MasterSerial.print(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
+    Serial.println(String(Start) + String(NetworkOK) + String("Wifi Installed!") + String(End));
+  }
 }
 
 
 void CheckSocket()                                          // cu 2s thi lap lai ham nay 1 lan
-{                                                           // toan them luc 7h58pm 21/8/19
+{ // toan them luc 7h58pm 21/8/19
   Serial.print("Check Socket: ");
   Serial.println(client->connected());
   if (!client->connected())
+  {
+    if ( RecheckSocket == 0) {
+      MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));  // toan them luc 7h30pm 22/8/19
+    }
+    Serial.println("Connect Server Failed!");
+    ServerTimeout = millis() ;
+    RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
+    ReconnectSocket();
+  }
+  else {
+    isReconnecting = false;
+    if ( RecheckSocket == 1)
     {
-      if ( RecheckSocket == 0) { MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End)); }  // toan them luc 7h30pm 22/8/19
-      Serial.println("Connect Server Failed!");
-      ServerTimeout = millis() ;
-      RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
-      ReconnectSocket();
+      RecheckSocket = 0;   // toan them luc 7h58pm 21/8/19
+      MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End));
     }
-    else {
-      isReconnecting = false;
-      if ( RecheckSocket == 1) 
-        {
-          RecheckSocket = 0;   // toan them luc 7h58pm 21/8/19
-          MasterSerial.print(String(Start) + String(ServerOK) + String("Connect Server OK") + String(End));
-        }
-      Serial.println("Connect Server Successed !");
-    }
+    Serial.println("Connect Server Successed !");
+  }
 }
 
 void StartCheckSocket()
@@ -171,15 +173,17 @@ void Serial_Wifi()
 #endif
         break;
       case updateStatusParameter:
+        Status = InputString.toInt();
 #ifdef DEBUGER
         Serial.print("Set Status Parameter: ");
-        Serial.println(MinPower);
+        Serial.println(Status);
 #endif
         break;
       case updateDirectionParameter:
+        Direction = InputString.toInt();
 #ifdef DEBUGER
         Serial.print("Set Direction Parameter: ");
-        Serial.println(MinPower);
+        Serial.println(Direction);
 #endif
         break;
       case updateStringPanelParameter:
@@ -196,16 +200,25 @@ void Serial_Wifi()
         Serial.println(PanPos);
 #endif
         break;
-      case updateLocationPanel:
+      case updateStatusPanel:
+        PanelStatus = InputString.toInt();
 #ifdef DEBUGER
-        Serial.print("Set Location Panel: ");
-        Serial.println(MinPower);
+        Serial.print("Set PanelStatus: ");
+        Serial.println(PanelStatus);
 #endif
         break;
-      case updateStatusPanel:
+      case updateStringPanelCamera:
+        CAMStrPanel = InputString.toInt();
 #ifdef DEBUGER
-        Serial.print("Set Status Panel: ");
-        Serial.println(MinPower);
+        Serial.print("Set Camera String: ");
+        Serial.println(CAMStrPanel);
+#endif
+        break;
+      case updateCollumnPanelCamera:
+        CAMPanPos = InputString.toInt();
+#ifdef DEBUGER
+        Serial.print("Set Camera Collumn: ");
+        Serial.println(CAMPanPos);
 #endif
         break;
       default:
