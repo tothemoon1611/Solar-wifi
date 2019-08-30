@@ -1,3 +1,4 @@
+    
 void CheckWifi()
 {
   while (WiFi.status() != WL_CONNECTED)
@@ -60,14 +61,23 @@ void StartCheckSocket()
 }
 void ReconnectSocket()
 {
+  client->close();
+  client = new AsyncClient;
   isReconnecting = true;
   Serial.println("Reconnecting socket !");
   client->onData(&handleData, client);
   client->onConnect(&onConnect, client);
+  client->onError(&handleError, NULL);
   client->connect(ip.c_str(), port);
+  
+}
+static void handleError(void* arg, AsyncClient* client, int8_t error) {
+#ifdef DEBUGER
+  Serial.printf("\n timeout...");
+#endif
+  isAllowCheck = true;
   isReconnecting = false;
 }
-
 
 void Serial_ID()
 {

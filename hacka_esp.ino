@@ -12,9 +12,9 @@ SoftwareSerial MasterSerial(D7, D8); // RX, TX
 /* Set Wifi Configuration */
 // server CMD: {"Type":20,"Data":"20"}
 
-String ssid = "";
-String password = "";
-String ip = "";
+String ssid = "Khanh Linh";
+String password = "11991122";
+String ip = "192.168.1.4";
 
 
 const uint16_t port = 9999;
@@ -41,13 +41,13 @@ int ChargingThreshold = 0;
 int SpinnerSpeed = 0;
 int MaxPower = 0;
 int MinPower = 0;
-String ID = "";
+String ID = "123456789";
 int ACK_ID = 0;
 bool config_network = 0;
-int StrPanel = 2;
+int StrPanel = 1;
 int PanPos = 1;
-int CAMStrPanel = 2;
-int CAMPanPos = 0;
+int CAMStrPanel = 1;
+int CAMPanPos = 1;
 int Status = 0;
 int Direction = 1;
 int PanelStatus = 1;
@@ -162,9 +162,10 @@ void onConnect(void* arg, AsyncClient* client) {
 #ifdef DEBUGER
   Serial.printf("\n client has been connected to %s on port %d \n", ip.c_str(), port);
 #endif
+  
+  RegisterClient(client, ID);
   isAllowCheck = true;
   isReconnecting = false;
-  RegisterClient(client, ID);
 }
 void RegisterClient(void* arg, String IDReg) {
 
