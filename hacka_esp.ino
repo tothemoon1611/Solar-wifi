@@ -45,11 +45,11 @@ String ID = "";
 int ACK_ID = 0;
 bool config_network = 0;
 int StrPanel = 2;
-int PanPos = 0;
+int PanPos = 1;
 int CAMStrPanel = 2;
 int CAMPanPos = 0;
 int Status = 0;
-int Direction = 0;
+int Direction = 1;
 int PanelStatus = 1;
 unsigned long ServerTimeout = millis() ;
 unsigned long WifiTimeout ;
@@ -279,19 +279,19 @@ void loop() {
     last_time_3 = millis();
   }
   Serial_Wifi();
-  if ( (unsigned long) (millis() - last_time) > 2000)
+  if ( (unsigned long) (millis() - last_time) > 500)
   {
-    battery[2] = random(99);
+    battery[2] = 100;
     SendClient(client, typeupdateBattery);
 
     last_time = millis();
   }
-  if ( (unsigned long) (millis() - last_time_4) > 3000)
+  if ( (unsigned long) (millis() - last_time_4) > 800)
   {
     SendClient(client, typeupdateMachineStatus);
     last_time_4 = millis();
   }
-    if ( (unsigned long) (millis() - last_time_7) > 4000)
+    if ( (unsigned long) (millis() - last_time_7) > 1300)
   {
     SendClient(client, typeupdatePanel);
     last_time_7 = millis();
