@@ -58,8 +58,8 @@ bool RecheckSocket = 0 ;
 bool RecheckWifi = 0 ;
 
 char jsonBattery[] = "{\"Type\":30,\"Data\":\"{'current':%.2f,'voltage':%.2f,'energy':%d}\"}\r\n";
-char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%d','direction':'%d','string':%d, 'collumn':%d}\"}\r\n";
-char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'string':%d, 'collumn':%d,'status':'%d'}\"}\r\n";
+char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%d','direction':'%d','row':%d, 'collumn':%d}\"}\r\n";
+char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'row':%d, 'collumn':%d,'status':'%d'}\"}\r\n";
 
 /* event callbacks */
 static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
@@ -183,7 +183,7 @@ void SendClient(void* arg, int type) {
   char message[300];
   switch (type) {
     case typeupdateBattery:
-      sprintf(message, jsonBattery, battery[0], battery[1], battery[2]);
+      sprintf(message, jsonBattery, battery[0], battery[1], 100);
       break;
     case typeupdateMachineStatus:
       sprintf(message, jsonParameter, Status, Direction, StrPanel, PanPos);
@@ -275,7 +275,7 @@ void loop() {
   CheckWifi();
   if ( (unsigned long) (millis() - last_time_3) > 2000)
   {
-    CheckSocket();
+    StartCheckSocket();
     last_time_3 = millis();
   }
   Serial_Wifi();

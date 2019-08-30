@@ -33,6 +33,7 @@ void CheckSocket()                                          // cu 2s thi lap lai
       MasterSerial.print(String(Start) + String(ServerError) + String("Connect Server Failed") + String(End));  // toan them luc 7h30pm 22/8/19
     }
     Serial.println("Connect Server Failed!");
+    isAllowCheck = false;
     ServerTimeout = millis() ;
     RecheckSocket = 1 ;                         // toan them luc 7h58pm 21/8/19
     ReconnectSocket();
