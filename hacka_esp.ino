@@ -12,9 +12,9 @@ SoftwareSerial MasterSerial(D7, D8); // RX, TX
 /* Set Wifi Configuration */
 // server CMD: {"Type":20,"Data":"20"}
 
-String ssid = "Khanh Linh";
-String password = "11991122";
-String ip = "192.168.1.4";
+String ssid = "";
+String password = "";
+String ip = "";
 
 
 const uint16_t port = 9999;
@@ -28,7 +28,9 @@ unsigned long last_time_4;
 unsigned long last_time_5;
 unsigned long last_time_6;
 unsigned long last_time_7;
+
 int i = 0;
+
 float battery[] = {0, 0, 0};
 String InputString = "";
 String DisplayString = "";
@@ -36,20 +38,21 @@ boolean StringComplete = false;
 bool SerialRecv = false;
 int serial_counter = 0;
 char cmd;
-int MovingSpeed = 0;
+
+int MovingSpeed = 0; //float
 int ChargingThreshold = 0;
 int SpinnerSpeed = 0;
 int MaxPower = 0;
 int MinPower = 0;
-String ID = "123456789";
-int ACK_ID = 0;
-bool config_network = 0;
+
+int ACK_ID = 0; //1byte
+bool config_network = 0; //true fasle
 int StrPanel = 1;
 int PanPos = 1;
 int CAMStrPanel = 1;
 int CAMPanPos = 1;
-int Status = 0;
-int Direction = 1;
+int Status = 0;  //run stop
+int Direction = 1; 
 int PanelStatus = 1;
 unsigned long ServerTimeout = millis() ;
 unsigned long WifiTimeout ;
@@ -62,7 +65,8 @@ char jsonParameter[] = "{\"Type\":31,\"Data\":\"{'status':'%d','direction':'%d',
 char jsonPanel[] = "{\"Type\":32,\"Data\":\"{'row':%d, 'collumn':%d,'status':'%d'}\"}\r\n";
 
 /* event callbacks */
-static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
+static void handleData(void* arg, AsyncClient* client, void *data, size_t len) 
+{
 #ifdef DEBUGER
   Serial.printf("\n data received from %s \n", client->remoteIP().toString().c_str());
 #endif
