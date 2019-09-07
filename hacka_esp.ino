@@ -38,6 +38,7 @@ boolean StringComplete = false;
 bool SerialRecv = false;
 int serial_counter = 0;
 char cmd;
+String ID = "" ;
 
 int MovingSpeed = 0; //float
 int ChargingThreshold = 0;
@@ -54,6 +55,16 @@ int CAMPanPos = 1;
 int Status = 0;  //run stop
 int Direction = 1; 
 int PanelStatus = 1;
+
+int Last_Direction ; 
+float Last_battery[] = {0, 0, 0} ;
+int Last_StrPanel = 1 ; 
+int Last_Panpos = 1 ;
+int Last_CAMStrPanel = 1 ;
+int Last_CAMPanPos = 1 ;
+int Last_PanelStatus = 1 ;
+int Last_Status = 0;
+
 unsigned long ServerTimeout = millis() ;
 unsigned long WifiTimeout ;
 
@@ -184,7 +195,8 @@ void RegisterClient(void* arg, String IDReg) {
 }
 
 
-void SendClient(void* arg, int type) {
+void SendClient(void* arg, int type) 
+{
   char message[300];
   switch (type) {
     case typeupdateBattery:
@@ -284,20 +296,32 @@ void loop() {
     last_time_3 = millis();
   }
   Serial_Wifi();
-  if ( (unsigned long) (millis() - last_time) > 500)
+  
+  if ( ( (unsigned long) (millis() - last_time) > 10000 ) && (battery[0] != Last_battery[0] || battery[1] != Last_battery[1]) )
   {
+    Last_battery[0] = battery[0] ; 
+    Last_battery[1] = battery[1] ;
     battery[2] = 100;
     SendClient(client, typeupdateBattery);
 
     last_time = millis();
   }
-  if ( (unsigned long) (millis() - last_time_4) > 800)
+  
+  if ( ( (unsigned long) (millis() - last_time_4) > 800 ) && ( Status != Last_Status || Direction != Last_Direction || StrPanel != Last_StrPanel || PanPos != Last_Panpos ) )
   {
+    Last_Status = Status ; 
+    Last_Direction = Direction ; 
+    Last_StrPanel = StrPanel ; 
+    Last_Panpos = PanPos ;
     SendClient(client, typeupdateMachineStatus);
     last_time_4 = millis();
   }
-    if ( (unsigned long) (millis() - last_time_7) > 1300)
+  
+  if ( ( (unsigned long) (millis() - last_time_7) > 1300 ) && (CAMStrPanel != Last_CAMStrPanel || CAMPanPos != Last_CAMPanPos || PanelStatus != Last_PanelStatus ) )
   {
+    Last_CAMStrPanel = CAMStrPanel ; 
+    Last_CAMPanPos = CAMPanPos ;
+    Last_PanelStatus = PanelStatus ;
     SendClient(client, typeupdatePanel);
     last_time_7 = millis();
   }
